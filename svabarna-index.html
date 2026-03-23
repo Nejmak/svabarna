@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Švábárna — Exotičtí švábi z Hradce</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="svabarna-style.css">
+</head>
+<body>
+
+<!-- ===================== NAVIGATION ===================== -->
+<nav>
+  <div class="nav-logo">Šváb<span>árna</span></div>
+  <ul class="nav-links">
+    <li><a href="#shop">Obchod</a></li>
+    <li><a href="#about">O nás</a></li>
+    <li><a href="#care">Péče</a></li>
+    <li><a href="#contact">Kontakt</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-admin" onclick="openAdmin()">⚙ Admin</button>
+    <button class="btn-cart" onclick="toggleCart()">
+      🛒 Košík (<span id="cart-count">0</span>)
+    </button>
+  </div>
+</nav>
+
+<!-- ===================== SHOP PAGE ===================== -->
+<div id="shop">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">🌿 Vlastní chov — Královéhradecký kraj</div>
+      <h1>Exotičtí švábi<br>přímo <em>k vám domů</em></h1>
+      <p>Nabízíme živé exempláře vzácných a krmných švábů pro terária, chovatele i sběratele. Každý kus pochází z ověřeného odchovu s dokladem původu.</p>
+      <a href="#products" class="btn-primary">Prohlédnout nabídku →</a>
+    </div>
+    <div class="hero-deco">🪳</div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span class="filter-label">Filtr:</span>
+    <button class="filter-btn active" onclick="filterProducts('all', this)">Vše</button>
+    <button class="filter-btn" onclick="filterProducts('dubia', this)">Blaptica dubia</button>
+    <button class="filter-btn" onclick="filterProducts('turkestan', this)">Turkestánský</button>
+    <button class="filter-btn" onclick="filterProducts('madagaskar', this)">Madagaskarský</button>
+    <button class="filter-btn" onclick="filterProducts('exoticky', this)">Exotičtí</button>
+    <div class="filter-sort">
+      <select class="sort-select" onchange="sortProducts(this.value)">
+        <option value="default">Řadit: výchozí</option>
+        <option value="price-asc">Cena ↑</option>
+        <option value="price-desc">Cena ↓</option>
+        <option value="name">Název A–Z</option>
+        <option value="stock">Skladem</option>
+      </select>
+    </div>
+    <input type="text" class="search-input" placeholder="🔍 Hledat šváby…" oninput="searchProducts(this.value)">
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="products-section" id="products">
+    <h2 class="section-title">Aktuální <span>nabídka</span></h2>
+    <div class="product-grid" id="product-grid">
+      <!-- JS renders cards here -->
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div class="modal-overlay" id="product-modal" onclick="closeProductModal(event)">
+    <div class="modal-box" id="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- CARE SECTION -->
+  <div class="care-section" id="care">
+    <div class="care-inner">
+      <h2 class="section-title" style="color:var(--cream)">Jak se starat o <span style="color:var(--sand)">šváby</span></h2>
+      <div class="care-grid">
+        <div class="care-card">
+          <div class="care-icon">🌡️</div>
+          <h3>Teplota</h3>
+          <p>Optimální teplota pro chov je 28–32 °C. Argentinský šváb snese i pokojovou teplotu, ale reprodukce se zpomalí.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">🥬</div>
+          <h3>Krmení</h3>
+          <p>Zelenina, ovoce, cereálie. Vyhněte se citrusům a slané stravě. Vždy zajistěte přístup k vodě přes vlhkou houbičku.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">🏠</div>
+          <h3>Ubytování</h3>
+          <p>Plastová nádoba s víkem a větracím otvorem. Vrstva substrátu alespoň 5 cm. Dubia neleze po hladkém plastu.</p>
+        </div>
+        <div class="care-card">
+          <div class="care-icon">🔄</div>
+          <h3>Reprodukce</h3>
+          <p>Argentinský šváb je živorodý — mláďata se líhnou přímo. Při teplotě 30 °C produkuje 20–30 mláďat měsíčně.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT STRIP -->
+  <div class="about-strip" id="about">
+    <div class="about-item">
+      <div class="about-icon">🏡</div>
+      <h3>Vlastní odchov</h3>
+      <p>Všichni švábi pocházejí z naší farmy v Královéhradeckém kraji. Čistá legální produkce bez dovozu.</p>
+    </div>
+    <div class="about-item">
+      <div class="about-icon">📦</div>
+      <h3>Bezpečná přeprava</h3>
+      <p>Speciální termobox s výztuží zaručuje, že švábi dorazí živí a zdraví do 24 hodin po celé ČR.</p>
+    </div>
+    <div class="about-item">
+      <div class="about-icon">🌿</div>
+      <h3>Péče & podpora</h3>
+      <p>Ke každé objednávce přikládáme manuál chovu. Jsme k dispozici na chatu i telefonu.</p>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact-section" id="contact">
+    <div class="contact-inner">
+      <h2 class="section-title">Kontakt</h2>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <p>📍 Královéhradecký kraj, ČR</p>
+          <p>📧 info@svabarna.cz</p>
+          <p>📞 +420 777 123 456</p>
+          <p>🌐 svabarna.cz</p>
+          <p style="margin-top:1rem;color:#888;font-size:0.85rem;">IČO: 12345678 | Zapsáno v OR</p>
+        </div>
+        <form class="contact-form" onsubmit="submitContact(event)">
+          <div class="form-group">
+            <label>Jméno</label>
+            <input type="text" class="form-input" id="c-name" placeholder="Jan Novák" required>
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" class="form-input" id="c-email" placeholder="jan@email.cz" required>
+          </div>
+          <div class="form-group">
+            <label>Zpráva</label>
+            <textarea class="form-textarea" id="c-msg" placeholder="Dotaz, objednávka na míru…" required></textarea>
+          </div>
+          <button type="submit" class="btn-save">Odeslat zprávu →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 <strong>Švábárna</strong> — Exotičtí švábi s.r.o. | Královéhradecký kraj | info@svabarna.cz | svabarna.cz
+  </footer>
+</div>
+
+<!-- ===================== CART OVERLAY ===================== -->
+<div class="overlay" id="cart-overlay" onclick="closeCartOutside(event)">
+  <div class="cart-panel" id="cart-panel">
+    <div class="cart-title">
+      🛒 Košík
+      <button class="cart-close" onclick="toggleCart()">✕</button>
+    </div>
+    <div id="cart-items"></div>
+    <div class="cart-summary" id="cart-summary"></div>
+
+    <!-- CHECKOUT FORM -->
+    <div id="checkout-form" style="display:none">
+      <div class="cart-divider">Doručovací údaje</div>
+      <div class="form-group">
+        <label>Jméno a příjmení</label>
+        <input type="text" class="form-input" id="o-name" placeholder="Jan Novák">
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" class="form-input" id="o-email" placeholder="jan@email.cz">
+      </div>
+      <div class="form-group">
+        <label>Telefon</label>
+        <input type="tel" class="form-input" id="o-phone" placeholder="+420 777 000 000">
+      </div>
+      <div class="form-group">
+        <label>Adresa doručení</label>
+        <input type="text" class="form-input" id="o-address" placeholder="Ulice 1, 500 00 Hradec Králové">
+      </div>
+      <div class="form-group">
+        <label>Způsob dopravy</label>
+        <select class="form-select" id="o-shipping" onchange="updateShipping()">
+          <option value="0">Osobní odběr (zdarma)</option>
+          <option value="89">Zásilkovna (89 Kč)</option>
+          <option value="120">PPL kurýr – termobox (120 Kč)</option>
+          <option value="149">DPD express 24h (149 Kč)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Poznámka k objednávce</label>
+        <textarea class="form-textarea" id="o-note" placeholder="Nepovinné…" style="height:60px"></textarea>
+      </div>
+      <button class="btn-checkout" onclick="submitOrder()">✅ Potvrdit objednávku</button>
+      <button class="btn-back-cart" onclick="backToCart()">← Zpět do košíku</button>
+    </div>
+
+    <div id="cart-actions"></div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN PANEL ===================== -->
+<div id="admin">
+  <div class="admin-sidebar">
+    <div class="admin-logo">Švábárna<small>Admin Panel</small></div>
+    <nav class="admin-nav">
+      <div class="admin-nav-item active" data-section="dashboard" onclick="showAdminSection('dashboard', this)">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="admin-nav-item" data-section="products" onclick="showAdminSection('products', this)">
+        <span class="icon">🪳</span> Produkty
+      </div>
+      <div class="admin-nav-item" data-section="orders" onclick="showAdminSection('orders', this)">
+        <span class="icon">📦</span> Objednávky
+      </div>
+      <div class="admin-nav-item" data-section="stock" onclick="showAdminSection('stock', this)">
+        <span class="icon">📋</span> Zásoby
+      </div>
+      <div class="admin-nav-item" data-section="customers" onclick="showAdminSection('customers', this)">
+        <span class="icon">👥</span> Zákazníci
+      </div>
+      <div class="admin-nav-item" data-section="settings" onclick="showAdminSection('settings', this)">
+        <span class="icon">⚙️</span> Nastavení
+      </div>
+    </nav>
+    <div class="admin-back" onclick="closeAdmin()">← Zpět na web</div>
+  </div>
+
+  <div class="admin-main">
+
+    <!-- ---- DASHBOARD ---- -->
+    <div id="section-dashboard" class="admin-section active">
+      <div class="admin-header">
+        <h1>Dashboard</h1>
+        <span class="admin-date">Dnes: <strong id="today-date"></strong></span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent:var(--leaf)">
+          <div class="stat-label">Tržby tento měsíc</div>
+          <div class="stat-value" id="stat-revenue">—</div>
+          <div class="stat-sub" id="stat-revenue-sub">▲ načítám…</div>
+        </div>
+        <div class="stat-card" style="--accent:var(--amber)">
+          <div class="stat-label">Objednávky celkem</div>
+          <div class="stat-value" id="stat-orders">—</div>
+          <div class="stat-sub" id="stat-orders-sub">▲ tento týden</div>
+        </div>
+        <div class="stat-card" style="--accent:var(--sand)">
+          <div class="stat-label">Aktivní produkty</div>
+          <div class="stat-value" id="stat-products">—</div>
+          <div class="stat-sub">na skladě</div>
+        </div>
+        <div class="stat-card" style="--accent:var(--moss)">
+          <div class="stat-label">Průměrná objednávka</div>
+          <div class="stat-value" id="stat-avg">—</div>
+          <div class="stat-sub" id="stat-avg-sub">Kč</div>
+        </div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Tržby — posledních 7 dní (Kč)</div>
+          <div class="bar-chart" id="bar-chart"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Produkty podle kategorie</div>
+          <div id="category-chart" class="category-chart"></div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">Poslední objednávky</div>
+        <table class="admin-table" id="recent-orders-table"></table>
+      </div>
+    </div>
+
+    <!-- ---- PRODUCTS ---- -->
+    <div id="section-products" class="admin-section">
+      <div class="admin-header">
+        <h1>Produkty</h1>
+        <button class="btn-primary" onclick="newProduct()">+ Přidat produkt</button>
+      </div>
+      <div class="product-mgmt-grid">
+        <div class="table-card">
+          <div class="table-card-header">
+            Seznam produktů
+            <input type="text" class="admin-search" placeholder="Hledat…" oninput="filterAdminProducts(this.value)">
+          </div>
+          <table class="admin-table" id="products-table"></table>
+        </div>
+        <div class="form-card">
+          <h3 id="form-title">Nový produkt</h3>
+          <div class="form-group">
+            <label>Název</label>
+            <input type="text" class="form-input" id="f-name" placeholder="Šváb argentinský">
+          </div>
+          <div class="form-group">
+            <label>Latinský název</label>
+            <input type="text" class="form-input" id="f-latin" placeholder="Blaptica dubia">
+          </div>
+          <div class="form-group">
+            <label>Kategorie</label>
+            <select class="form-select" id="f-category">
+              <option value="dubia">Blaptica dubia</option>
+              <option value="turkestan">Turkestánský</option>
+              <option value="madagaskar">Madagaskarský</option>
+              <option value="exoticky">Exotičtí</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cena (Kč/ks)</label>
+              <input type="number" class="form-input" id="f-price" placeholder="2">
+            </div>
+            <div class="form-group">
+              <label>Na skladě (ks)</label>
+              <input type="number" class="form-input" id="f-stock" placeholder="100">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Min. objednávka (ks)</label>
+              <input type="number" class="form-input" id="f-minorder" placeholder="10">
+            </div>
+            <div class="form-group">
+              <label>Emoji ikona</label>
+              <input type="text" class="form-input" id="f-emoji" placeholder="🪳" maxlength="2">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Popis</label>
+            <textarea class="form-textarea" id="f-desc" placeholder="Krátký popis produktu…"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Štítky (oddělené čárkou)</label>
+            <input type="text" class="form-input" id="f-tags" placeholder="krmivo, terrarium, živorodý">
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="f-featured"> Zobrazit jako doporučený
+            </label>
+          </div>
+          <input type="hidden" id="f-id">
+          <button class="btn-save" onclick="saveProduct()">💾 Uložit produkt</button>
+          <button class="btn-cancel" onclick="newProduct()" style="margin-top:0.5rem">Zrušit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- ORDERS ---- -->
+    <div id="section-orders" class="admin-section">
+      <div class="admin-header">
+        <h1>Objednávky</h1>
+        <div class="header-filters">
+          <select class="sort-select" onchange="filterOrders(this.value)">
+            <option value="all">Vše</option>
+            <option value="new">Nové</option>
+            <option value="processing">Zpracovávají se</option>
+            <option value="shipped">Odesláno</option>
+            <option value="done">Dokončeno</option>
+          </select>
+          <input type="text" class="admin-search" placeholder="Hledat zákazníka…" oninput="searchOrders(this.value)">
+        </div>
+      </div>
+      <div class="table-card">
+        <table class="admin-table" id="orders-table"></table>
+      </div>
+    </div>
+
+    <!-- ---- STOCK ---- -->
+    <div id="section-stock" class="admin-section">
+      <div class="admin-header">
+        <h1>Zásoby & ceny</h1>
+        <button class="btn-primary" onclick="exportStock()">⬇ Export CSV</button>
+      </div>
+      <div class="stock-alerts" id="stock-alerts"></div>
+      <div class="table-card">
+        <table class="admin-table" id="stock-table"></table>
+      </div>
+    </div>
+
+    <!-- ---- CUSTOMERS ---- -->
+    <div id="section-customers" class="admin-section">
+      <div class="admin-header">
+        <h1>Zákazníci</h1>
+        <input type="text" class="admin-search" placeholder="Hledat zákazníka…" oninput="searchCustomers(this.value)">
+      </div>
+      <div class="table-card">
+        <table class="admin-table" id="customers-table"></table>
+      </div>
+    </div>
+
+    <!-- ---- SETTINGS ---- -->
+    <div id="section-settings" class="admin-section">
+      <div class="admin-header"><h1>Nastavení</h1></div>
+      <div class="settings-grid">
+        <div class="form-card">
+          <h3>Informace o obchodě</h3>
+          <div class="form-group"><label>Název obchodu</label>
+            <input type="text" class="form-input" value="Švábárna">
+          </div>
+          <div class="form-group"><label>E-mail</label>
+            <input type="email" class="form-input" value="info@svabarna.cz">
+          </div>
+          <div class="form-group"><label>Telefon</label>
+            <input type="tel" class="form-input" value="+420 777 123 456">
+          </div>
+          <div class="form-group"><label>Adresa</label>
+            <input type="text" class="form-input" value="Královéhradecký kraj, ČR">
+          </div>
+          <button class="btn-save" onclick="notify('✅ Nastavení uloženo')">Uložit</button>
+        </div>
+        <div class="form-card">
+          <h3>Doprava a platba</h3>
+          <div class="form-group"><label>Min. objednávka pro dopravu zdarma (Kč)</label>
+            <input type="number" class="form-input" value="500">
+          </div>
+          <div class="form-group"><label>DPH (%)</label>
+            <input type="number" class="form-input" value="21">
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" checked> Dobírka povolena</label><br>
+            <label><input type="checkbox" checked> Platba převodem</label><br>
+            <label><input type="checkbox"> Online platba kartou</label>
+          </div>
+          <button class="btn-save" onclick="notify('✅ Nastavení dopravy uloženo')">Uložit</button>
+        </div>
+        <div class="form-card">
+          <h3>API napojení (DB)</h3>
+          <p style="font-size:0.82rem;color:#888;margin-bottom:1rem;">
+            Zde nastavte endpoint pro napojení na backend databázi. Aktuálně běží v offline/demo režimu.
+          </p>
+          <div class="form-group"><label>API Base URL</label>
+            <input type="text" class="form-input" id="api-url" placeholder="https://api.svabarna.cz/v1">
+          </div>
+          <div class="form-group"><label>API Token</label>
+            <input type="password" class="form-input" id="api-token" placeholder="Bearer token…">
+          </div>
+          <button class="btn-save" onclick="saveApiSettings()">Uložit & otestovat</button>
+          <div id="api-status" style="margin-top:0.5rem;font-size:0.8rem;color:#888;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /admin-main -->
+</div><!-- /admin -->
+
+<!-- ===================== NOTIFICATION ===================== -->
+<div class="notif" id="notif"></div>
+
+<script src="svabarna-app.js"></script>
+</body>
+</html>

@@ -169,64 +169,194 @@ let modalPhotos  = [];
 let modalPhotoIdx = 0;
 
 /* =====================================================
-   2. HERO — SVG švábi (velcí, realistický siluety)
+   2. HERO — Canvas švábi (animovaní, realistický styl)
    ===================================================== */
 
-// SVG silueta švába — jeden soubor, renderuje se v různých velikostech
-const ROACH_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 72" fill="#1a1008">
-  <!-- tělo -->
-  <ellipse cx="80" cy="42" rx="40" ry="18"/>
-  <!-- hlava -->
-  <ellipse cx="118" cy="38" rx="16" ry="10"/>
-  <!-- pronotum (štít) -->
-  <ellipse cx="103" cy="37" rx="14" ry="13" fill="#231508"/>
-  <!-- lesklý odlesk -->
-  <ellipse cx="94" cy="32" rx="16" ry="6" fill="rgba(255,255,255,.07)"/>
-  <!-- tykadla levé -->
-  <path d="M130 30 Q150 14 160 5" stroke="#1a1008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <path d="M130 30 Q152 18 158 9" stroke="#1a1008" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <!-- nohy — horní trojice -->
-  <path d="M100 24 Q86 11 70 6" stroke="#1a1008" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <path d="M84 21 Q70 8 54 3" stroke="#1a1008" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <path d="M66 21 Q52 8 38 4" stroke="#1a1008" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <!-- nohy — dolní trojice -->
-  <path d="M100 56 Q86 69 70 74" stroke="#1a1008" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <path d="M84 59 Q70 72 54 75" stroke="#1a1008" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <path d="M66 59 Q52 72 38 74" stroke="#1a1008" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-  <!-- ocasní výběžky (cerci) -->
-  <path d="M40 40 Q22 37 8 40" stroke="#1a1008" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-  <path d="M40 46 Q22 49 6 46" stroke="#1a1008" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-</svg>`;
+function drawRoach(ctx, lp, size) {
+  ctx.save();
+  ctx.scale(size, size);
 
-function initCrawlers() {
-  const container = document.getElementById('crawlers');
+  const legSwing  = Math.sin(lp) * 7;
+  const legSwing2 = Math.sin(lp + Math.PI) * 7;
 
-  // Konfigurace 12 švábů — velcí, různé směry, různá zpoždění
-  const config = [
-    { dir: 'go-right', top: 12, width: 130, dur: 24, delay: -3  },
-    { dir: 'go-right', top: 35, width: 155, dur: 31, delay: -15 },
-    { dir: 'go-right', top: 58, width: 120, dur: 22, delay: -8  },
-    { dir: 'go-right', top: 78, width: 145, dur: 28, delay: -20 },
-    { dir: 'go-left',  top: 22, width: 140, dur: 27, delay: -10 },
-    { dir: 'go-left',  top: 48, width: 125, dur: 34, delay: -5  },
-    { dir: 'go-left',  top: 72, width: 150, dur: 26, delay: -18 },
-    { dir: 'go-diag',  top:  8, width: 115, dur: 30, delay: -12 },
-    { dir: 'go-diag',  top: 85, width: 135, dur: 25, delay: -22 },
-    { dir: 'go-right', top: 45, width: 110, dur: 36, delay: -28 },
-    { dir: 'go-left',  top: 18, width: 130, dur: 29, delay: -7  },
-    { dir: 'go-right', top: 65, width: 118, dur: 23, delay: -16 },
+  const legs = [
+    { bx: -6, by: -18, ex: -22, ey: -32, sw: legSwing  },
+    { bx: -6, by:  -6, ex: -26, ey: -10, sw: legSwing2 },
+    { bx: -6, by:   6, ex: -24, ey:  14, sw: legSwing  },
+    { bx:  6, by: -18, ex:  22, ey: -32, sw: legSwing2 },
+    { bx:  6, by:  -6, ex:  26, ey: -10, sw: legSwing  },
+    { bx:  6, by:   6, ex:  24, ey:  14, sw: legSwing2 },
   ];
 
-  config.forEach(cfg => {
-    const el = document.createElement('div');
-    el.className = `roach ${cfg.dir}`;
-    el.innerHTML = ROACH_SVG;
-    el.style.width              = cfg.width + 'px';
-    el.style.top                = cfg.top + '%';
-    el.style.animationDuration  = cfg.dur + 's';
-    el.style.animationDelay     = cfg.delay + 's';
-    container.appendChild(el);
+  ctx.strokeStyle = '#c8820a';
+  ctx.lineCap = 'round';
+  legs.forEach(function(l) {
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    var midX = (l.bx + l.ex) / 2 + l.sw * 0.4;
+    var midY = (l.by + l.ey) / 2 + l.sw * 0.2;
+    ctx.moveTo(l.bx, l.by);
+    ctx.quadraticCurveTo(midX, midY, l.ex + l.sw * 0.5, l.ey + l.sw * 0.3);
+    ctx.stroke();
   });
+
+  // tělo
+  ctx.fillStyle = '#c8906a';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 14, 24, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // křídlový překryv
+  ctx.fillStyle = '#8b3a1e';
+  ctx.beginPath();
+  ctx.ellipse(0, 2, 9, 18, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // pronotum
+  ctx.fillStyle = '#7a2e10';
+  ctx.beginPath();
+  ctx.ellipse(0, -20, 11, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // hlava
+  ctx.fillStyle = '#5a2008';
+  ctx.beginPath();
+  ctx.ellipse(0, -30, 7, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // odlesk
+  ctx.fillStyle = 'rgba(255,220,180,0.18)';
+  ctx.beginPath();
+  ctx.ellipse(-2, -4, 5, 12, -0.15, 0, Math.PI * 2);
+  ctx.fill();
+
+  // tykadla
+  ctx.strokeStyle = '#3d1505';
+  ctx.lineWidth = 1.5;
+  ctx.lineCap = 'round';
+  var antWave = Math.sin(lp * 0.5) * 4;
+  ctx.beginPath();
+  ctx.moveTo(-4, -34);
+  ctx.quadraticCurveTo(-14 + antWave, -48, -22 + antWave * 1.5, -62);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(4, -34);
+  ctx.quadraticCurveTo(14 - antWave, -48, 22 - antWave * 1.5, -62);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function initCrawlers() {
+  var heroEl = document.getElementById('home');
+  if (!heroEl) return;
+
+  // Vytvoříme canvas přes hero sekci
+  var canvas = document.createElement('canvas');
+  canvas.id = 'roach-canvas';
+  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;';
+  heroEl.style.position = 'relative';
+  heroEl.appendChild(canvas);
+
+  var W, H;
+  function resize() {
+    var r = heroEl.getBoundingClientRect();
+    W = canvas.width  = r.width;
+    H = canvas.height = r.height;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var ctx = canvas.getContext('2d');
+
+  // Vytvoříme 18 švábů
+  var roaches = [];
+  for (var i = 0; i < 18; i++) {
+    roaches.push({
+      x: Math.random() * (W || 1200),
+      y: Math.random() * (H || 600),
+      angle: Math.random() * Math.PI * 2,
+      baseSpeed: 0.5 + Math.random() * 0.8,
+      speed: 0.5 + Math.random() * 0.8,
+      size: 0.65 + Math.random() * 0.5,
+      legPhase: Math.random() * Math.PI * 2,
+      legSpeed: 0.11 + Math.random() * 0.07,
+      scaredTimer: 0,
+      wanderTimer: Math.floor(Math.random() * 100),
+      targetAngle: Math.random() * Math.PI * 2,
+      opacity: 0,
+      wobble: 0,
+    });
+  }
+
+  var mx = -999, my = -999;
+
+  // Sledujeme myš nad hero sekcí
+  heroEl.addEventListener('mousemove', function(e) {
+    var r = heroEl.getBoundingClientRect();
+    mx = e.clientX - r.left;
+    my = e.clientY - r.top;
+  });
+  heroEl.addEventListener('mouseleave', function() { mx = -999; my = -999; });
+
+  function loop() {
+    if (!W || !H) { resize(); }
+    ctx.clearRect(0, 0, W, H);
+
+    for (var i = 0; i < roaches.length; i++) {
+      var r = roaches[i];
+      r.opacity = Math.min(1, r.opacity + 0.03);
+      r.legPhase += r.legSpeed * (r.speed / r.baseSpeed);
+
+      var dx = mx - r.x, dy = my - r.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < 140) r.scaredTimer = 55;
+
+      if (r.scaredTimer > 0) {
+        r.scaredTimer--;
+        var flee = Math.atan2(dy, dx) + Math.PI;
+        var diff = flee - r.angle;
+        while (diff >  Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        r.angle += diff * 0.22;
+        r.speed = Math.min(r.baseSpeed * 5, r.speed + 0.45);
+        r.legSpeed = 0.20 + Math.random() * 0.06;
+      } else {
+        r.speed = Math.max(r.baseSpeed, r.speed * 0.95);
+        r.legSpeed = 0.11 + Math.random() * 0.04;
+        r.wanderTimer--;
+        if (r.wanderTimer <= 0) {
+          r.targetAngle = r.angle + (Math.random() - 0.5) * Math.PI * 1.5;
+          r.wanderTimer = 60 + Math.floor(Math.random() * 120);
+        }
+        var d2 = r.targetAngle - r.angle;
+        while (d2 >  Math.PI) d2 -= Math.PI * 2;
+        while (d2 < -Math.PI) d2 += Math.PI * 2;
+        r.angle += d2 * 0.035 + (Math.random() - 0.5) * 0.015;
+      }
+
+      r.wobble = Math.sin(r.legPhase * 0.8) * 0.04;
+      r.x += Math.cos(r.angle) * r.speed;
+      r.y += Math.sin(r.angle) * r.speed;
+
+      var m = 35;
+      if (r.x < m)     { r.angle = Math.atan2(Math.sin(r.angle),  Math.abs(Math.cos(r.angle))); r.x = m; }
+      if (r.x > W - m) { r.angle = Math.atan2(Math.sin(r.angle), -Math.abs(Math.cos(r.angle))); r.x = W - m; }
+      if (r.y < m)     { r.angle = Math.atan2( Math.abs(Math.sin(r.angle)), Math.cos(r.angle)); r.y = m; }
+      if (r.y > H - m) { r.angle = Math.atan2(-Math.abs(Math.sin(r.angle)), Math.cos(r.angle)); r.y = H - m; }
+
+      ctx.save();
+      ctx.globalAlpha = r.opacity * 0.82;
+      ctx.translate(r.x, r.y);
+      ctx.rotate(r.angle + Math.PI / 2 + r.wobble);
+      drawRoach(ctx, r.legPhase, r.size);
+      ctx.restore();
+    }
+
+    requestAnimationFrame(loop);
+  }
+  loop();
 }
 
 function initHeroSlideshow() {
@@ -319,7 +449,6 @@ function openModal(id) {
   modalPhotos   = (a.imgs || []).filter(Boolean);
   modalPhotoIdx = 0;
 
-  // Gallery HTML
   const slideHtml = modalPhotos.length
     ? modalPhotos.map((url, i) =>
         `<div class="gallery-slide">
@@ -352,7 +481,6 @@ function openModal(id) {
        </div>`
     : '';
 
-  // Care grid HTML
   const careLines = (a.care || '').split('\n').filter(Boolean);
   const careGridHtml = careLines.map(line => {
     const colonIdx = line.indexOf(':');
@@ -364,7 +492,6 @@ function openModal(id) {
     </div>`;
   }).join('');
 
-  // Description HTML
   const descHtml = (a.desc || '').split('\n\n')
     .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
     .join('');
@@ -777,7 +904,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCare();
   renderFacts();
 
-  // ESC closes everything
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       document.getElementById('animal-modal').classList.remove('open');
